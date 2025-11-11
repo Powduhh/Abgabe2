@@ -22,3 +22,4 @@ public class messageCodecTest {
         assertEquals(expected, MessageCodec.encode(test));
     }
 }
+
