@@ -3,32 +3,36 @@ package de.hsrm.automat_und_bank.exampleTCP;
 import java.io.*;
 import java.net.*;
 
-class TCPClient {
+class ATMClient {
 
-	public static void main(String argv[]) throws Exception {
-		String sentence;
-		String modifiedSentence;
+    public static void main(String argv[]) throws Exception {
+        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+        Socket clientSocket = new Socket("localhost", 6789);
 
-		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(
-				System.in));
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-		Socket clientSocket = new Socket("localhost", 6789);
+        System.out.println("💳 Verbindung zum BankServer hergestellt.");
+        System.out.println("Gib Befehle ein (z. B. AUTH, BALANCE, WITHDRAW, EXIT):");
 
-		DataOutputStream outToServer = new DataOutputStream(
-				clientSocket.getOutputStream());
+        String sentence;
+        String modifiedSentence;
 
-		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(
-				clientSocket.getInputStream()));
+        while (true) {
+            System.out.print(">> ");
+            sentence = inFromUser.readLine();  // Eingabe vom Nutzer
 
-		sentence = inFromUser.readLine();
+            outToServer.writeBytes(sentence + '\n');  // an Server senden
 
-		outToServer.writeBytes(sentence + '\n');
+            modifiedSentence = inFromServer.readLine();  // Antwort lesen
+            System.out.println("FROM SERVER: " + modifiedSentence);
 
-		modifiedSentence = inFromServer.readLine();
+            if (sentence.equalsIgnoreCase("EXIT")) {
+                System.out.println("💳 Verbindung geschlossen.");
+                break;
+            }
+        }
 
-		System.out.println("FROM SERVER: " + modifiedSentence);
-
-		clientSocket.close();
-
-	}
+        clientSocket.close();
+    }
 }
