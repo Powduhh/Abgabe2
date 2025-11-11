@@ -1,0 +1,68 @@
+Nachricht:
+{
+    Typ: VERIFY_CARD | VERIFY_PIN | GET_BALANCE | WITHDRAW
+    Kartennummer: <Nummer>
+    PIN: <PIN, nur bei VERIFY_PIN>
+    Betrag: <Betrag, nur bei WITHDRAW>
+}
+
+
+START ATM-Session
+
+ATM zeigt "Bitte Karte einlegen"
+
+Wenn Karte eingelegt:
+    Sende Nachricht an Bank:
+        Nachrichttyp: VERIFY_CARD
+        Kartennummer: <Kartennummer>
+    
+    Empfange Antwort von Bank:
+        Wenn Antwort = CARD_INVALID:
+            Zeige "Ungültige Karte"
+            Beende Session
+        Wenn Antwort = CARD_VALID:
+            Zeige "Bitte PIN eingeben"
+            PIN = Benutzereingabe
+
+            Sende Nachricht an Bank:
+                Nachrichttyp: VERIFY_PIN
+                Kartennummer: <Kartennummer>
+                PIN: <Eingabe-PIN>
+
+            Empfange Antwort von Bank:
+                Wenn Antwort = PIN_INVALID:
+                    Zeige "Falsche PIN"
+                    Beende Session
+                Wenn Antwort = PIN_VALID:
+                    Zeige Hauptmenü:
+                        1. Kontostand abfragen
+                        2. Geld abheben
+                        3. Beenden
+
+                    Benutzerwahl = Eingabe
+
+                    SWITCH (Benutzerwahl):
+                        CASE 1:  // Kontostand abfragen
+                            Sende Nachricht an Bank:
+                                Nachrichttyp: GET_BALANCE
+                                Kartennummer: <Kartennummer>
+                            Empfange Antwort:
+                                Zeige "Kontostand: " + Betrag
+
+                        CASE 2:  // Geld abheben
+                            Betrag = Benutzereingabe
+                            Sende Nachricht an Bank:
+                                Nachrichttyp: WITHDRAW
+                                Kartennummer: <Kartennummer>
+                                Betrag: <Betrag>
+                            Empfange Antwort:
+                                Wenn Antwort = INSUFFICIENT_FUNDS:
+                                    Zeige "Nicht genügend Guthaben"
+                                Wenn Antwort = WITHDRAW_SUCCESS:
+                                    Zeige "Bitte entnehmen Sie Ihr Geld: " + Betrag
+
+                        CASE 3:  // Beenden
+                            Zeige "Session beendet"
+                            Beende Session
+
+ENDE ATM-Session
