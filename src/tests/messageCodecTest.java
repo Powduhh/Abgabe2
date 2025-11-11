@@ -18,6 +18,7 @@ public class messageCodecTest {
     @Test
     public void encodeTest(){
         String test = "encoded 2";
-        assertEquals("encoded 2", MessageCodec.encode(test));
+        Message expected = new Message("Encode", 2);
+        assertEquals(expected, MessageCodec.encode(test));
     }
 }
