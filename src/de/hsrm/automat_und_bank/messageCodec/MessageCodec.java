@@ -12,7 +12,7 @@ public class MessageCodec {
         
         String[] parser = msg.split(" ");
         if (parser.length == 2){
-            resultMessage = new Message(parser[0], Integer.parseInt(parser[1]));
+            resultMessage = new Message(parser[0].toUpperCase(), Integer.parseInt(parser[1]));
         }
         else{
             resultMessage = new Message(parser[0]);
@@ -28,6 +28,6 @@ public class MessageCodec {
         }
         encoded = msg.toString();
         
-        return encoded;
+        return encoded.toUpperCase();
     }
 }

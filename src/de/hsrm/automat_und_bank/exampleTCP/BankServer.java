@@ -19,21 +19,45 @@ class BankServer {
             DataOutputStream outToClient =
                     new DataOutputStream(connectionSocket.getOutputStream());
 
+
+            int[] bekannteKarten = {
+                1, 7,17,42
+            };
             String request = inFromClient.readLine();
             System.out.println("Empfangen: " + request);
+            String[] requestArray = request.split(" ");
 
             String response;
-
+            boolean authentifiziert = false;
             // Simples Testprotokoll
-            switch (request) {
-                case "AUTH":
-                    response = "OK: Authentifizierung erfolgreich\n";
-                    break;
+            switch (requestArray[0]) {
+                case "KARTE":
+                    boolean gefunden = false;
+                    for (int i : bekannteKarten) {
+                        if(i == Integer.parseInt(requestArray[1])){
+                            gefunden = true;
+                        }
+                    }
+                    if(gefunden){
+                        response = "OK: Authentifizierung erfolgreich\n";
+                        authentifiziert = true;
+                        break;
+                        }
+                        response = "NICHT OK: Authentifizierung nicht erfolgreich, versuchen sie es nochmal\n";
+                        break;
                 case "BALANCE":
-                    response = "Kontostand: 1234.56 EUR\n";
+                    if(authentifiziert){
+                        response = "Kontostand: 1234.56 EUR\n";
+                        break;
+                    }
+                    response = "Kontostand: gesperrt, nicht authentifiziert\n";
                     break;
                 case "WITHDRAW":
-                    response = "OK: 100 EUR abgehoben\n";
+                    if(authentifiziert){
+                        response = "OK: 100 EUR abgehoben\n";
+                        break;
+                    }
+                    response = "Nicht authentifiziert";
                     break;
                 case "EXIT":
                     response = "Verbindung beendet\n";
