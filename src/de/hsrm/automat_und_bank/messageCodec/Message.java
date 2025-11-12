@@ -26,7 +26,6 @@ public class Message {
 
         String resultString = this.befehl;
         String resultNR;
-
         
         if(nr == 0){
             return resultString;
@@ -37,6 +36,13 @@ public class Message {
         resultString = resultString + " " + resultNR;
 
         return resultString;
+    }
+
+    public boolean equals(Message msg) {
+        if (this.befehl.equals(msg.befehl) && (this.nr == msg.nr)){
+            return true;
+        }
+        return false;
     }
 
 

@@ -1,5 +1,6 @@
 package tests;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -18,8 +19,9 @@ public class messageCodecTest {
     @Test
     public void encodeTest(){
         String test = "encoded 2";
-        Message expected = new Message("Encode", 2);
-        assertEquals(expected, MessageCodec.encode(test));
+        Message actual = MessageCodec.encode(test);
+        Message expected = new Message("encoded", 2);
+        assertTrue(actual.equals(expected));
     }
 }
 
