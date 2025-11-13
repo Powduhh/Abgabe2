@@ -42,7 +42,7 @@ class BankServer {
                         }
                     }
                     if(gefunden){
-                        response = "OK: Karte gefunden\n";
+                        response = "OK: Karte gefunden, bitte Pin eingeben\n";
                         karteGefunden = true;
                         break;
                         }
