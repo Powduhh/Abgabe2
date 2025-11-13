@@ -17,16 +17,13 @@ class BankServer {
         int richtigePin = 17;
         boolean authentifiziert = false;
         boolean karteGefunden = false;
+        BufferedReader inFromClient =
+                new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+
+        DataOutputStream outToClient =
+                new DataOutputStream(connectionSocket.getOutputStream());
 
         while (true) {
-
-            BufferedReader inFromClient =
-                    new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-
-            DataOutputStream outToClient =
-                    new DataOutputStream(connectionSocket.getOutputStream());
-
-
             String request = inFromClient.readLine();
             System.out.println("Empfangen: " + request);
             String[] requestArray = request.split(" ");
@@ -51,17 +48,19 @@ class BankServer {
                 case "PIN":
                 if(karteGefunden){
                     if(requestArray[1] == null ){
-                        response = "NICHT OK: Keine Pin";
+                        response = "NICHT OK: Keine Pin\n";
                         break;
                     }
                     if(Integer.parseInt(requestArray[1]) == richtigePin){
-                        response = "OK: Pin richtig";
+                        response = "OK: Pin richtig\n";
                         authentifiziert = true;
                         break;
                     }
-                    response = "Nicht OK: Pin falsch";
+                    response = "Nicht OK: Pin falsch\n";
                     break;
                 }
+                response = "Nicht OK: Keine Karte\n";
+                break;
                 case "BALANCE":
                     if(authentifiziert){
                         response = "Kontostand: 1234.56 EUR\n";
