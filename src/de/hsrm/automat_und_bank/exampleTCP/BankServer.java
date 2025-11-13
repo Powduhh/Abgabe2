@@ -17,13 +17,15 @@ class BankServer {
         int richtigePin = 17;
         boolean authentifiziert = false;
         boolean karteGefunden = false;
-        BufferedReader inFromClient =
-                new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-
-        DataOutputStream outToClient =
-                new DataOutputStream(connectionSocket.getOutputStream());
-
+        
         while (true) {
+
+            BufferedReader inFromClient =
+                    new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+    
+            DataOutputStream outToClient =
+                    new DataOutputStream(connectionSocket.getOutputStream());
+                    
             String request = inFromClient.readLine();
             System.out.println("Empfangen: " + request);
             String[] requestArray = request.split(" ");
