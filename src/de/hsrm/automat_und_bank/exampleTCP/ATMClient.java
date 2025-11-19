@@ -5,6 +5,7 @@ import java.net.*;
 
 import de.hsrm.automat_und_bank.messageCodec.Message;
 import de.hsrm.automat_und_bank.messageCodec.MessageCodec;
+import de.hsrm.automat_und_bank.messageCodec.MessageExit;
 
 class ATMClient {
 
@@ -23,14 +24,14 @@ class ATMClient {
 
         while (true) {
             System.out.print(">> ");
-            sentence = MessageCodec.encode(inFromUser.readLine());  // Eingabe vom Nutzer
+            sentence = MessageCodec.decode(inFromUser.readLine());  // Eingabe vom Nutzer
 
-            outToServer.writeBytes(MessageCodec.decode(sentence) + '\n');  // an Server senden
+            outToServer.writeBytes(MessageCodec.encode(sentence) + '\n');  // an Server senden
 
             modifiedSentence = inFromServer.readLine();  // Antwort lesen
             System.out.println("FROM SERVER: " + modifiedSentence);
 
-            if (sentence.equals(new Message("EXIT"))) {
+            if (sentence.equals(new MessageExit("EXIT"))) {
                 System.out.println("💳 Verbindung geschlossen.");
                 break;
             }

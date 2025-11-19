@@ -1,12 +1,13 @@
 package de.hsrm.automat_und_bank.messageCodec;
 
-public class Message {
+public abstract class Message {
+
 
     String befehl;
     int nr;
     double betrag;
+    MessageType type;
 
-    
     public Message(String befehl, int nr){
         this.befehl = befehl;
         this.nr = nr;
@@ -72,5 +73,13 @@ public class Message {
         this.betrag = betrag;
     }
 
+
+    public MessageType getType() {
+        return type;
+    }
+
+    public void setType(MessageType type) {
+        this.type = type;
+    }
     
 }
