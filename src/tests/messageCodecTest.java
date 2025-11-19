@@ -6,21 +6,24 @@ import org.junit.Test;
 
 import de.hsrm.automat_und_bank.messageCodec.Message;
 import de.hsrm.automat_und_bank.messageCodec.MessageCodec;
+import de.hsrm.automat_und_bank.messageCodec.MessageKarte;
+import de.hsrm.automat_und_bank.messageCodec.MessageType;
 
 public class messageCodecTest {
     
     @Test
-    public void decodeTest(){
-        Message test = new Message("Decode", 1);
-        assertEquals("Decode 1", MessageCodec.decode(test));
+    public void encodeTestIntoSpecificMessage(){
+        Message test = new MessageKarte("Karte", 1);
+        assertEquals("KarteEncode 1", MessageCodec.encode(test));
+        assertEquals(MessageType.KARTE, test.getType());
         
     }
 
     @Test
-    public void encodeTest(){
-        String test = "encoded 2";
-        Message actual = MessageCodec.encode(test);
-        Message expected = new Message("encoded", 2);
+    public void decodeTest(){
+        String test = "KarteDecode 2";
+        Message actual = MessageCodec.decode(test);
+        Message expected = new MessageKarte("KarteDecode", 2);
         assertTrue(actual.equals(expected));
     }
 }

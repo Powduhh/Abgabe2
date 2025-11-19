@@ -3,6 +3,10 @@ package de.hsrm.automat_und_bank.exampleTCP;
 import java.io.*;
 import java.net.*;
 
+import de.hsrm.automat_und_bank.messageCodec.Message;
+import de.hsrm.automat_und_bank.messageCodec.MessageCodec;
+import de.hsrm.automat_und_bank.messageCodec.MessageExit;
+
 class ATMClient {
 
     public static void main(String argv[]) throws Exception {
@@ -13,21 +17,21 @@ class ATMClient {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
         System.out.println("💳 Verbindung zum BankServer hergestellt.");
-        System.out.println("Gib Befehle ein (z. B. AUTH, BALANCE, WITHDRAW, EXIT):");
+        System.out.println("Gib Befehle ein (z. B. KARTE NR, PIN NR, BALANCE, WITHDRAW, EXIT):");
 
-        String sentence;
+        Message sentence;
         String modifiedSentence;
 
         while (true) {
             System.out.print(">> ");
-            sentence = inFromUser.readLine();  // Eingabe vom Nutzer
+            sentence = MessageCodec.decode(inFromUser.readLine());  // Eingabe vom Nutzer
 
-            outToServer.writeBytes(sentence + '\n');  // an Server senden
+            outToServer.writeBytes(MessageCodec.encode(sentence) + '\n');  // an Server senden
 
             modifiedSentence = inFromServer.readLine();  // Antwort lesen
             System.out.println("FROM SERVER: " + modifiedSentence);
 
-            if (sentence.equalsIgnoreCase("EXIT")) {
+            if (sentence.equals(new MessageExit("EXIT"))) {
                 System.out.println("💳 Verbindung geschlossen.");
                 break;
             }
