@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.*;
 
 import de.hsrm.automat_und_bank.messageCodec.Message;
-import de.hsrm.automat_und_bank.messageCodec.MessageANSWER;
 import de.hsrm.automat_und_bank.messageCodec.MessageCodec;
 import de.hsrm.automat_und_bank.messageCodec.MessageNULL;
 import de.hsrm.automat_und_bank.messageCodec.MessageType;
