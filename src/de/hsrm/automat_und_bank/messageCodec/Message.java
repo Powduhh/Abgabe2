@@ -1,6 +1,6 @@
 package de.hsrm.automat_und_bank.messageCodec;
 
-public abstract class Message {
+public class Message {
 
 
     String befehl;
@@ -11,10 +11,11 @@ public abstract class Message {
     public Message(String befehl, int nr){
         this.befehl = befehl;
         this.nr = nr;
+    }
 
-        if(befehl.equals("BETRAG")){
-            betrag = nr;
-        }
+    public Message(String befehl, double betrag){
+        this.befehl = befehl;
+        this.betrag = betrag;
     }
 
     public Message(String befehl){

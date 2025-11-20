@@ -3,6 +3,10 @@ package de.hsrm.automat_und_bank.exampleTCP;
 import java.io.*;
 import java.net.*;
 
+import de.hsrm.automat_und_bank.messageCodec.Message;
+import de.hsrm.automat_und_bank.messageCodec.MessageCodec;
+import de.hsrm.automat_und_bank.messageCodec.MessageType;
+
 class BankServer {
 
     public static void main(String[] argv) throws Exception {
@@ -17,6 +21,8 @@ class BankServer {
         int richtigePin = 17;
         boolean authentifiziert = false;
         boolean karteGefunden = false;
+        double kontostand = 1312.42;
+
         
         while (true) {
 
@@ -26,17 +32,18 @@ class BankServer {
             DataOutputStream outToClient =
                     new DataOutputStream(connectionSocket.getOutputStream());
                     
-            String request = inFromClient.readLine();
-            System.out.println("Empfangen: " + request);
-            String[] requestArray = request.split(" ");
+            String requestString = inFromClient.readLine();
+            Message requestMessage = MessageCodec.decode(requestString);
+            System.out.println("Empfangen: " + requestString);
+            
 
             String response;
             // Simples Testprotokoll
-            switch (requestArray[0]) {
-                case "KARTE":
+            switch (requestMessage.getType()) {
+                case MessageType.KARTE:
                     boolean gefunden = false;
                     for (int i : bekannteKarten) {
-                        if(i == Integer.parseInt(requestArray[1])){
+                        if(i == requestMessage.getNr()){
                             gefunden = true;
                         }
                     }
@@ -47,13 +54,9 @@ class BankServer {
                         }
                         response = "NICHT OK: Karte nicht gefunden, versuchen sie es nochmal\n";
                         break;
-                case "PIN":
+                case MessageType.PIN:
                 if(karteGefunden){
-                    if(requestArray[1] == null ){
-                        response = "NICHT OK: Keine Pin\n";
-                        break;
-                    }
-                    if(Integer.parseInt(requestArray[1]) == richtigePin){
+                    if(requestMessage.getNr() == richtigePin){
                         response = "OK: Pin richtig\n";
                         authentifiziert = true;
                         break;
@@ -63,21 +66,21 @@ class BankServer {
                 }
                 response = "Nicht OK: Keine Karte\n";
                 break;
-                case "BALANCE":
+                case MessageType.BALANCE:
                     if(authentifiziert){
-                        response = "Kontostand: 1234.56 EUR\n";
+                        response = "Kontostand: " + kontostand + "\n";
                         break;
                     }
                     response = "Kontostand: gesperrt, nicht authentifiziert\n";
                     break;
-                case "WITHDRAW":
+                case MessageType.WITHDRAW:
                     if(authentifiziert){
                         response = "OK: 100 EUR abgehoben\n";
                         break;
                     }
                     response = "Nicht authentifiziert";
                     break;
-                case "EXIT":
+                case MessageType.EXIT:
                     response = "Verbindung beendet\n";
                     outToClient.writeBytes(response);
                     connectionSocket.close();
