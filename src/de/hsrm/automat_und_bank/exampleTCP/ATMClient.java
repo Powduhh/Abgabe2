@@ -16,7 +16,7 @@ class ATMClient {
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-        System.out.println("💳 Verbindung zum BankServer hergestellt.");
+        System.out.println("Verbindung zum BankServer hergestellt.");
         System.out.println("Gib Befehle ein (z. B. KARTE NR, PIN NR, BALANCE, WITHDRAW, EXIT):");
 
         String eingabe;
@@ -32,7 +32,7 @@ class ATMClient {
             System.out.println("FROM SERVER: " + modifiedSentence);
 
             if (eingabe.equalsIgnoreCase("exit")) {
-                System.out.println("💳 Verbindung geschlossen.");
+                System.out.println("Verbindung geschlossen.");
                 clientSocket.close();
                 break;
             }
