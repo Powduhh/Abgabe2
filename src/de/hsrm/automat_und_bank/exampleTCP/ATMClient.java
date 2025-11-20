@@ -5,7 +5,7 @@ import java.net.*;
 
 import de.hsrm.automat_und_bank.messageCodec.Message;
 import de.hsrm.automat_und_bank.messageCodec.MessageCodec;
-import de.hsrm.automat_und_bank.messageCodec.MessageExit;
+import de.hsrm.automat_und_bank.messageCodec.MessageEXIT;
 
 class ATMClient {
 
@@ -31,7 +31,7 @@ class ATMClient {
             modifiedSentence = inFromServer.readLine();  // Antwort lesen
             System.out.println("FROM SERVER: " + modifiedSentence);
 
-            if (sentence.equals(new MessageExit("EXIT"))) {
+            if (sentence.equals(new MessageEXIT("EXIT"))) {
                 System.out.println("💳 Verbindung geschlossen.");
                 break;
             }

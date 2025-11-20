@@ -22,10 +22,19 @@ public class MessageCodec {
         
         String[] parser = msg.split(" ");
         if (parser.length == 2){
-            resultMessage = new Message(parser[0].toUpperCase(), Integer.parseInt(parser[1]));
+            switch (parser[0].toUpperCase()) {
+                case "KARTE":
+                    resultMessage = new MessageKARTE(parser[0].toUpperCase(), Integer.parseInt(parser[1]));
+                    break;
+                case "PIN":
+                    resultMessage = new MessagePIN(parser[0].toUpperCase(), Integer.parseInt(parser[1]));
+                default:
+                    resultMessage = new MessageNULL("Es wurde keine passende Eingabe gemacht");
+                    break;
+            }
         }
         else{
-            resultMessage = new Message(parser[0]);
+            resultMessage = new MessageEXIT(parser[0].toUpperCase());
         }
 
         return resultMessage;
