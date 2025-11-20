@@ -31,8 +31,9 @@ class ATMClient {
             modifiedSentence = inFromServer.readLine();  // Antwort lesen
             System.out.println("FROM SERVER: " + modifiedSentence);
 
-            if (eingabe.equals(new MessageEXIT("EXIT"))) {
+            if (eingabe.equalsIgnoreCase("exit")) {
                 System.out.println("💳 Verbindung geschlossen.");
+                clientSocket.close();
                 break;
             }
         }

@@ -42,7 +42,10 @@ class BankServer {
             System.out.println("Empfangen: " + requestString);
             String response;
 
-            if(requestMessage.getBefehl().equalsIgnoreCase("Karte")){
+            if(requestMessage.getBefehl().equalsIgnoreCase("exit")){
+
+            }
+            else if(requestMessage.getBefehl().equalsIgnoreCase("Karte")){
                 if(!gefunden){
                     for (int i : bekannteKarten) {
                             if(i == requestMessage.getNr()){
