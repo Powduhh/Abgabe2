@@ -4,6 +4,7 @@ public class MessageNULL extends Message{
 
     public MessageNULL(String befehl) {
         super(befehl);
+        this.type = MessageType.NULL;
     }
 
 }

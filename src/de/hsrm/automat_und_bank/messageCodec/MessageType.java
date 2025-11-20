@@ -5,5 +5,6 @@ public enum MessageType {
         PIN,
         BALANCE,
         WITHDRAW,
-        EXIT  
+        EXIT,
+        NULL
 }

@@ -4,7 +4,9 @@ import java.io.*;
 import java.net.*;
 
 import de.hsrm.automat_und_bank.messageCodec.Message;
+import de.hsrm.automat_und_bank.messageCodec.MessageANSWER;
 import de.hsrm.automat_und_bank.messageCodec.MessageCodec;
+import de.hsrm.automat_und_bank.messageCodec.MessageNULL;
 import de.hsrm.automat_und_bank.messageCodec.MessageType;
 
 class BankServer {
@@ -15,6 +17,7 @@ class BankServer {
         Socket connectionSocket = welcomeSocket.accept();
         System.out.println("Client verbunden: " + connectionSocket.getInetAddress());
 
+        // Testcase Variablen 
         int[] bekannteKarten = {
             1, 7,17,42
         };
@@ -22,6 +25,7 @@ class BankServer {
         boolean authentifiziert = false;
         boolean karteGefunden = false;
         double kontostand = 1312.42;
+        boolean gefunden = false;
 
         
         while (true) {
@@ -32,63 +36,71 @@ class BankServer {
             DataOutputStream outToClient =
                     new DataOutputStream(connectionSocket.getOutputStream());
                     
+            Message responseMessage;
             String requestString = inFromClient.readLine();
             Message requestMessage = MessageCodec.decode(requestString);
             System.out.println("Empfangen: " + requestString);
-            
-
             String response;
+
+            if(requestMessage.getBefehl().equalsIgnoreCase("Karte")){
+                if(!gefunden){
+                    for (int i : bekannteKarten) {
+                            if(i == requestMessage.getNr()){
+                                gefunden = true;
+                            }
+                        }
+                }
+            }else if (!karteGefunden) {
+                responseMessage = requestMessage.answer("nicht ok, beginnen sie mit befehl karte und der kartennummer\n");
+                response = MessageCodec.encode(responseMessage);
+                outToClient.writeBytes(response);
+                continue;
+            }else if (!(requestMessage.getBefehl().equalsIgnoreCase("pin")) && !authentifiziert){
+                responseMessage = requestMessage.answer("bitte zuerst befehl pin und pinzahlen eingeben\n");
+                response = MessageCodec.encode(responseMessage);
+                outToClient.writeBytes(response);
+                continue;
+            }
+
             // Simples Testprotokoll
             switch (requestMessage.getType()) {
                 case MessageType.KARTE:
-                    boolean gefunden = false;
-                    for (int i : bekannteKarten) {
-                        if(i == requestMessage.getNr()){
-                            gefunden = true;
-                        }
-                    }
                     if(gefunden){
-                        response = "OK: Karte gefunden, bitte Pin eingeben\n";
+                        responseMessage = requestMessage.answer("OK: Karte gefunden, bitte Pin eingeben\n");
                         karteGefunden = true;
                         break;
                         }
-                        response = "NICHT OK: Karte nicht gefunden, versuchen sie es nochmal\n";
+                        responseMessage = requestMessage.answer("NICHT OK: Karte nicht gefunden, versuchen sie es nochmal\n");
                         break;
                 case MessageType.PIN:
-                if(karteGefunden){
                     if(requestMessage.getNr() == richtigePin){
-                        response = "OK: Pin richtig\n";
+                        responseMessage = requestMessage.answer("OK: Pin richtig\n");
                         authentifiziert = true;
                         break;
                     }
-                    response = "Nicht OK: Pin falsch\n";
+                    responseMessage = requestMessage.answer("Nicht OK: Pin falsch\n");
                     break;
-                }
-                response = "Nicht OK: Keine Karte\n";
-                break;
                 case MessageType.BALANCE:
-                    if(authentifiziert){
-                        response = "Kontostand: " + kontostand + "\n";
+                        responseMessage = requestMessage.answer("Kontostand: " + kontostand + "\n");
                         break;
-                    }
-                    response = "Kontostand: gesperrt, nicht authentifiziert\n";
-                    break;
                 case MessageType.WITHDRAW:
-                    if(authentifiziert){
-                        response = "OK: 100 EUR abgehoben\n";
+                    if((kontostand - requestMessage.getBetrag()) >= 0){
+                        kontostand -= requestMessage.getBetrag();
+                        responseMessage = requestMessage.answer("OK: "+ requestMessage.getBetrag() + " EUR abgehoben \n");
                         break;
                     }
-                    response = "Nicht authentifiziert";
-                    break;
+                        responseMessage = requestMessage.answer("Kontostand nicht ausreichend \n");
+                        break;
                 case MessageType.EXIT:
-                    response = "Verbindung beendet\n";
+                    responseMessage = requestMessage.answer("Verbindung beendet\n");
+                    response = MessageCodec.encode(responseMessage);
                     outToClient.writeBytes(response);
                     connectionSocket.close();
                     continue; // wartet auf neuen Client
                 default:
-                    response = "FEHLER: Unbekannte Nachricht\n";
+                    responseMessage = new MessageNULL("Es wurde keine passende Eingabe gemacht\n");
             }
-
+            response = MessageCodec.encode(responseMessage);
             outToClient.writeBytes(response);
         }
     }

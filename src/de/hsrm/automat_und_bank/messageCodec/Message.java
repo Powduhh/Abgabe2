@@ -22,6 +22,7 @@ public class Message {
         this.befehl = befehl;
     }
 
+
     
     @Override
     public String toString() {
@@ -45,6 +46,10 @@ public class Message {
             return true;
         }
         return false;
+    }
+
+    public Message answer(String befehl){
+        return new MessageANSWER(befehl);
     }
 
 

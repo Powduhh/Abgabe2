@@ -13,7 +13,7 @@ public class MessageCodec {
     }
 
     public static Message decode(String msg) {
-        Message nullMessage = new MessageNULL("No Message found");
+        Message nullMessage = new MessageNULL("Es wurde keine passende Eingabe gemacht");
         Message resultMessage;
 
         if (msg == null) {
@@ -33,11 +33,11 @@ public class MessageCodec {
                     resultMessage = new MessageWITHDRAW(parser[0].toUpperCase(), Double.parseDouble(parser[1]));
                     break;
                 default:
-                    resultMessage = new MessageNULL("Es wurde keine passende Eingabe gemacht");
+                    resultMessage = nullMessage;
                     break;
             }
         }
-        else{
+        else if(parser.length == 1){
             switch (parser[0].toUpperCase()) {
                 case "BALANCE":
                     resultMessage = new MessageBALANCE(parser[0].toUpperCase());
@@ -46,9 +46,12 @@ public class MessageCodec {
                     resultMessage = new MessageEXIT(parser[0].toUpperCase());
                     break;
                 default:
-                    resultMessage = new MessageNULL("Es wurde keine passende Eingabe gemacht");
+                    resultMessage = nullMessage;
                     break;
             }
+        }
+        else{
+            resultMessage = nullMessage;
         }
 
         return resultMessage;

@@ -19,19 +19,19 @@ class ATMClient {
         System.out.println("💳 Verbindung zum BankServer hergestellt.");
         System.out.println("Gib Befehle ein (z. B. KARTE NR, PIN NR, BALANCE, WITHDRAW, EXIT):");
 
-        Message sentence;
+        String eingabe;
         String modifiedSentence;
 
         while (true) {
             System.out.print(">> ");
-            sentence = MessageCodec.decode(inFromUser.readLine());  // Eingabe vom Nutzer
+            eingabe = inFromUser.readLine();  // Eingabe vom Nutzer
 
-            outToServer.writeBytes(MessageCodec.encode(sentence) + '\n');  // an Server senden
+            outToServer.writeBytes(eingabe + '\n');  // an Server senden
 
             modifiedSentence = inFromServer.readLine();  // Antwort lesen
             System.out.println("FROM SERVER: " + modifiedSentence);
 
-            if (sentence.equals(new MessageEXIT("EXIT"))) {
+            if (eingabe.equals(new MessageEXIT("EXIT"))) {
                 System.out.println("💳 Verbindung geschlossen.");
                 break;
             }
